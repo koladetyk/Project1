@@ -71,21 +71,31 @@ class Block {
      */
     getBData() {
         let self = this;
+        console.log("1getBData")
         return new Promise((resolve, reject) => {
             // Getting the encoded data saved in the Block
-            let encodedData = self.data;
+            console.log("2getBData")
+            let encodedData = self.body;
+            console.log(encodedData)
 
             // Decoding the data to retrieve the JSON representation of the object
+            console.log("3getBData")
             let decodedData = hex2ascii(encodedData);
+            console.log(decodedData)
 
             // Parse the data to an object to be retrieve.
+            console.log("4getBData")
+            //console.log("2getBData")
             let parsedData = JSON.parse(decodedData);
+            console.log(parsedData)
 
             // Resolve with the data if the object isn't the Genesis block
-            if (self.previousBlockHash === null) { // Check if it's the genesis block
-                reject(new Error("Cannot retrieve data for the genesis block"));
+            console.log("5getBData")
+            if (self.height === 0) { // Check if it's the genesis block
+                reject("Cannot retrieve data for the genesis block");
             }
 
+            console.log("6getBData")
             if (parsedData && parsedData.body) {
                 resolve(parsedData.body);
             } else {
