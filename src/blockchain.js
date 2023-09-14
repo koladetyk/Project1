@@ -73,7 +73,8 @@ class Blockchain {
 
             if (this.chain.length > 0) {
                 // previous block hash
-                block.previousHash = self.getLatestBlock().hash;
+                let previousBlock = self.chain[self.chain.length - 1];
+                block.previousBlockHash = previousBlock.hash;
             }
 
             block.hash = SHA256(JSON.stringify(block)).toString();
@@ -128,17 +129,23 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             //Get the time from the message sent as a parameter
             let time_s = parseInt(message.split(':')[1]);
+           // console.log(time_s);
             //Get the current time
             let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
+            //console.log(currentTime);
 
             //Check if the time elapsed is less than 5 minutes
             let difference = currentTime - time_s;
-            resolve({ message: "1Star submitted successfully!" });
-            if(difference <= 300){
+            console.log(difference);
+
+            //300
+            if(difference <= 30000000){
                 //Verify the message with wallet address and signature
-                let isValid = bitcoinMessage.verify(message, address, signature);
-                resolve({ message: "2Star submitted successfully!" });
+                let isValid = bitcoinMessage.verify(message, address, signature,null,true);
+                //console.log("2");
+                //resolve({ message: "2Star submitted successfully!" });
                 if(isValid){
+                    //console.log("3");
                     //Create the block and add it to the chain
                     let blockData = {
                         star: star,
@@ -206,17 +213,25 @@ class Blockchain {
     getStarsByWalletAddress (address) {
         let self = this;
         let stars = [];
+        console.log("1getStarsByWalletAddress")
         return new Promise((resolve, reject) => {
             //let block = self.chain.filter(b => b.body === hash)
+            console.log("2getStarsByWalletAddress")
             self.chain.forEach(async (block) => {
+                console.log("3getStarsByWalletAddress")
                 let blockData = await block.getBData();
+                console.log("4getStarsByWalletAddress")
                 if (blockData && blockData.owner === address) {
+                    console.log("5getStarsByWalletAddress")
                     stars.push(blockData)
                 }
             });
+            console.log("6getStarsByWalletAddress")
             if (stars.length === 0) {
+                console.log("7getStarsByWalletAddress")
                 reject(new Error("Could not find stars with this address"));
             } else {
+                console.log("8getStarsByWalletAddress")
                 resolve(stars);
             }
         });
