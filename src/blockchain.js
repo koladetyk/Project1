@@ -100,7 +100,6 @@ class Blockchain {
         return new Promise((resolve) => {
 
             let TS = new Date().getTime().toString().slice(0,-3);
-            //let MOV = ${address}:${TS}:Registry;
             let MOV = `${address}:${TS}:Registry`;
             resolve(MOV);
 
@@ -129,24 +128,17 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             //Get the time from the message sent as a parameter
             let time_s = parseInt(message.split(':')[1]);
-           // console.log(time_s);
+			
             //Get the current time
             let currentTime = parseInt(new Date().getTime().toString().slice(0, -3));
-            //console.log(currentTime);
 
             //Check if the time elapsed is less than 5 minutes
             let difference = currentTime - time_s;
             console.log(difference);
-
-            //300
-            if(difference <= 30000000){
+            if(difference <= 300){
                 //Verify the message with wallet address and signature
                 let isValid = bitcoinMessage.verify(message, address, signature,null,true);
-                //console.log("2");
-                //resolve({ message: "2Star submitted successfully!" });
                 if(isValid){
-                    //console.log("3");
-                    //Create the block and add it to the chain
                     let blockData = {
                         star: star,
                         owner: address
@@ -213,27 +205,16 @@ class Blockchain {
     getStarsByWalletAddress (address) {
         let self = this;
         let stars = [];
-        console.log("1getStarsByWalletAddress")
         return new Promise((resolve, reject) => {
-            //let block = self.chain.filter(b => b.body === hash)
-            console.log("2getStarsByWalletAddress")
             self.chain.forEach(async (block) => {
-                console.log("3getStarsByWalletAddress")
                 let blockData = await block.getBData();
-                console.log("4getStarsByWalletAddress")
                 if (blockData && blockData.owner === address) {
-                    console.log("5getStarsByWalletAddress")
                     stars.push(blockData)
                 }
             });
-            console.log("6getStarsByWalletAddress")
-            if (stars.length === 0) {
-                console.log("7getStarsByWalletAddress")
-                reject(new Error("Could not find stars with this address"));
-            } else {
-                console.log("8getStarsByWalletAddress")
-                resolve(stars);
-            }
+			
+			resolve(stars);
+			
         });
     }
 
@@ -249,7 +230,6 @@ class Blockchain {
         return new Promise(async (resolve, reject) => {
             self.chain.forEach(async (block, index) => {
                 let isValid = await block.validate();
-                //let blockData = await block.getBData();
                 if (!isValid) {
                     errorLog.push({ blockIndex: index, error: 'Invalid block hash' });
                 }
