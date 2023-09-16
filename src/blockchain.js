@@ -78,6 +78,9 @@ class Blockchain {
             }
 
             block.hash = SHA256(JSON.stringify(block)).toString();
+			
+	  	  	// Validate the chain
+	        await self.validateChain();
 
             // add block to chain
             self.chain.push(block);
